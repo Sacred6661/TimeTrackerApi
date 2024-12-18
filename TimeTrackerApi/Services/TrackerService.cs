@@ -27,15 +27,15 @@ namespace TimeTrackerApi.Services
             return result;
         }
 
-        public async Task<ProjectDto> GetProject(long projectId)
+        public ProjectDto GetProject(long projectId)
         {
-            var project = await _dbContext.Projects
+            var project = _dbContext.Projects
                 .Where(p => (p.IsRemoved == false || p.IsRemoved == null) && p.ProjectId == projectId)
-                ?.SingleOrDefaultAsync();
-            var trackers = await _dbContext
-                .TimeTrackers.Where(p => p.ProjectId == projectId).ToListAsync();
+                ?.FirstOrDefault();
+            var trackers = _dbContext
+                .TimeTrackers.Where(p => p.ProjectId == projectId).ToList();
 
-            var query =  await (from p in _dbContext.Projects
+            var query =  (from p in _dbContext.Projects
                                join t in _dbContext.TimeTrackers
                                   on p.ProjectId equals t.ProjectId
                                where p.ProjectId == projectId
@@ -54,10 +54,10 @@ namespace TimeTrackerApi.Services
                                    DateStarted = p.DateStarted,
                                    DateRemoved = p.DateRemoved,
                                    TotalTimePassed = 0
-                               })?.FirstOrDefaultAsync();
+                               })?.FirstOrDefault();
 
             if (query == null)
-                query = await (from p in _dbContext.Projects
+                query = (from p in _dbContext.Projects
                                where p.ProjectId == projectId
                                select new FullProjectInfo
                                {
@@ -70,7 +70,7 @@ namespace TimeTrackerApi.Services
                                    DateStarted = p.DateStarted,
                                    DateRemoved = p.DateRemoved,
                                    TotalTimePassed = 0
-                               })?.FirstOrDefaultAsync();
+                               })?.FirstOrDefault();
 
             List<TrackingTime> allTrackers = new();
 

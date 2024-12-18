@@ -27,7 +27,7 @@ namespace TimeTrackerApi.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public async Task<ActionResult<ResponseModel<ProjectDto>>> GetProject(int projectId)
+        public ActionResult<ResponseModel<ProjectDto>> GetProject(int projectId)
         {
             if (projectId == 0)
             {
@@ -37,7 +37,7 @@ namespace TimeTrackerApi.Controllers
                     ErrorMessage = "Wrong project id"
                 };
             }
-            var projects = await _tracker.GetProject(projectId);
+            var projects = _tracker.GetProject(projectId);
 
             if (projects == null)
                 return new ResponseModel<ProjectDto>
@@ -54,9 +54,9 @@ namespace TimeTrackerApi.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<ActionResult<ResponseModel<TrackingTime>>> AddTrackingTime([FromBody] AddTimeDto addTime)
+        public ActionResult<ResponseModel<TrackingTime>> AddTrackingTime([FromBody] AddTimeDto addTime)
         {
-            var getTrackerItem = await _tracker.GetProject(addTime.ProjectId);
+            var getTrackerItem = _tracker.GetProject(addTime.ProjectId);
 
             if(getTrackerItem == null)
             {
