@@ -110,40 +110,67 @@ namespace TimeTrackerApi.Services
 
         public ProjectDto AddProject(AddProjectDto project)
         {
-            var prj = _mapper.Map<Project>(project);
-            prj.DateStarted = DateTime.Parse(project.DateStartedString);
-            prj.DateEnd = DateTime.Parse(project.DateEndString);
+            ProjectDto result = null;
+            try
+            {
+                var prj = _mapper.Map<Project>(project);
+                prj.DateStarted = DateTime.Parse(project.DateStartedString);
+                prj.DateEnd = DateTime.Parse(project.DateEndString);
 
-            _dbContext.Projects.Add(prj);
-            _dbContext.SaveChanges();
+                _dbContext.Projects.Add(prj);
+                _dbContext.SaveChanges();
 
-            var result = _mapper.Map<ProjectDto>(prj);
+                result = _mapper.Map<ProjectDto>(prj);
+            }
+            catch (Exception ex)
+            {
+                result = null;
+            }
+
             return result;
         }
 
         public ProjectDto RemoveProject(RemoveProjectDto project)
         {
-            var prj = _dbContext.Projects.Where(p => p.ProjectId == project.ProjectId).FirstOrDefault();
-            prj.IsRemoved = true;
-            prj.DateRemoved = DateTime.Now;
+            ProjectDto result = null;
+            try
+            {
+                var prj = _dbContext.Projects.Where(p => p.ProjectId == project.ProjectId).FirstOrDefault();
+                prj.IsRemoved = true;
+                prj.DateRemoved = DateTime.Now;
 
-            _dbContext.SaveChanges();
+                _dbContext.SaveChanges();
 
-            var result = _mapper.Map<ProjectDto>(prj);
+                result = _mapper.Map<ProjectDto>(prj);
+            }
+            catch (Exception ex)
+            {
+                result = null;
+            }
 
             return result;
         }
 
         public ProjectDto CompleteProject(CompleteProjectDto project)
         {
-            var prj = _dbContext.Projects.Where(p => p.ProjectId == project.ProjectId).FirstOrDefault();
+            Project prj;
+            ProjectDto result = null;
+            try
+            {
+                prj = _dbContext.Projects.Where(p => p.ProjectId == project.ProjectId).FirstOrDefault();
 
-            prj.IsComplited = true;
-            prj.DateComplited = DateTime.Now;
+                prj.IsComplited = true;
+                prj.DateComplited = DateTime.Now;
 
-            _dbContext.SaveChanges();
+                _dbContext.SaveChanges();
 
-            var result = _mapper.Map<ProjectDto>(prj);
+                result = _mapper.Map<ProjectDto>(prj);
+            }
+            catch(Exception ex)
+            {
+                prj = null;
+            }
+
 
             return result;
 
