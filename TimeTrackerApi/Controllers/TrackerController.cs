@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
+using TimeTrackerApi.Data.Enteties;
 using TimeTrackerApi.Models;
 using TimeTrackerApi.Services.Interfaces;
 
@@ -86,7 +87,12 @@ namespace TimeTrackerApi.Controllers
                 };
 
 
-
+            if (addTrackingTime.IsError)
+                    return new ResponseModel<TrackingTime>
+                    {
+                        IsError = true,
+                        ErrorMessage = "Error. Project is removed"
+                    };
 
 
             return new ResponseModel<TrackingTime>
@@ -97,26 +103,61 @@ namespace TimeTrackerApi.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public ActionResult<ProjectDto> AddProject(AddProjectDto addProject)
+        public ActionResult<ResponseModel<ProjectDto>> AddProject(AddProjectDto addProject)
         {
             var project = _tracker.AddProject(addProject);
-            return project;
+            if (project == null)
+                return new ResponseModel<ProjectDto>
+                {
+                    IsError = true,
+                    ErrorMessage = "Error on adding project"
+                };
+
+
+            return new ResponseModel<ProjectDto>
+            {
+                Data = project
+            };
         }
 
         [HttpPost]
         [Route("[action]")]
-        public ActionResult<ProjectDto> RemoveProject([FromBody]RemoveProjectDto removeProject)
+        public ActionResult<ResponseModel<ProjectDto>> RemoveProject([FromBody]RemoveProjectDto removeProject)
         {
             var project = _tracker.RemoveProject(removeProject);
-            return project;
+
+            if (project == null)
+                return new ResponseModel<ProjectDto>
+                {
+                    IsError = true,
+                    ErrorMessage = "Error on deleting project"
+                };
+
+
+            return new ResponseModel<ProjectDto>
+            {
+                Data = project
+            };
         }
 
         [HttpPost]
         [Route("[action]")]
-        public ProjectDto CompleteProject(CompleteProjectDto completeProject)
+        public ResponseModel<ProjectDto> CompleteProject(CompleteProjectDto completeProject)
         {
-            var test = _tracker.CompleteProject(completeProject);
-            return test;
+            var result = _tracker.CompleteProject(completeProject);
+
+            if (result == null)
+                return new ResponseModel<ProjectDto>
+                {
+                    IsError = true,
+                    ErrorMessage = "Error on compliting project"
+                };
+
+
+            return new ResponseModel<ProjectDto>
+            {
+                Data = result
+            };
         }
         //[HttpGet]
         //[Route("[action]")]

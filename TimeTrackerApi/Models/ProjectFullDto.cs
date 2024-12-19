@@ -1,6 +1,6 @@
 ﻿namespace TimeTrackerApi.Models
 {
-    public class ProjectFullDto
+    public class ProjectFullDto : ResponeForDto
     {
         public long ProjectId { get; set; }
         public string ProjectName { get; set; }

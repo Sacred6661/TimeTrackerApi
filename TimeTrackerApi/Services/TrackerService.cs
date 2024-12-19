@@ -4,6 +4,7 @@ using TimeTrackerApi.Data;
 using TimeTrackerApi.Data.Enteties;
 using TimeTrackerApi.Models;
 using TimeTrackerApi.Services.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TimeTrackerApi.Services
 {
@@ -81,7 +82,16 @@ namespace TimeTrackerApi.Services
                 query.TotalTimePassed += tracker.TakenTime;
             }
 
+
             var result = _mapper.Map<ProjectDto>(query);
+            if(result == null)
+            {
+                return new ProjectDto
+                {
+                    IsError = true,
+                    ErrorMessage = "Error when trying to get project"
+                };
+            }
             return result;
         }
 
@@ -93,10 +103,28 @@ namespace TimeTrackerApi.Services
                 var trackingTime = _mapper.Map<TimeTracker>(addTime);
                 trackingTime.ProjectId = addTime.ProjectId;
 
+                var project = _dbContext.Projects.FirstOrDefault();
+
+                if(project.IsComplited ?? false)
+                    return new TrackingTime
+                    {
+                        IsError = true,
+                        ErrorMessage = "Error. Project is completed"
+                    };
+
+                if (project.IsRemoved ?? false)
+                    return new TrackingTime
+                    {
+                        IsError = true,
+                        ErrorMessage = "Error. Project is removed"
+                    };
+
                 _dbContext.TimeTrackers.Add(trackingTime);
                 _dbContext.SaveChanges();
 
                 result = _mapper.Map<TrackingTime>(trackingTime);
+
+                
             }
             catch(Exception ex)
             {

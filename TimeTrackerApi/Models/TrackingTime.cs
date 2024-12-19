@@ -1,6 +1,6 @@
 ﻿namespace TimeTrackerApi.Models
 {
-    public class TrackingTime
+    public class TrackingTime : ResponeForDto
     {
         public long TimeTrackerId { get; set; }
         public string TimeTrackerName { get; set; }
